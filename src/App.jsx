@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Linkedin, Github, Code, ExternalLink, Award, Briefcase, GraduationCap, Zap, Database, Server, Smartphone, BookOpen, Trophy, Target } from 'lucide-react';
+import { Mail, Linkedin, Github, Code, ExternalLink, Award, Briefcase, GraduationCap, Zap, Database, Server, Smartphone, BookOpen, Trophy, Target, ImageOff } from 'lucide-react';
+import ig from "./images/linkdin.jpg"
 
 export default function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -270,9 +271,7 @@ export default function App() {
                     
                     <div className="relative w-80 h-80 rounded-full overflow-hidden border-4 border-emerald-400/50 shadow-2xl group-hover:scale-105 transition-all duration-500">
                       <div className="w-full h-full bg-gradient-to-br from-emerald-500 via-blue-600 to-purple-600 flex items-center justify-center">
-                        <svg className="w-48 h-48 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                        </svg>
+                        <img src={ig} alt=''></img>
                       </div>
                     </div>
                     
