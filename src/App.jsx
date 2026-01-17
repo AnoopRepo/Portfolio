@@ -1,448 +1,570 @@
-import React, { useState, useEffect } from 'react';
-import { Code, Mail, Linkedin, Github, ExternalLink, Menu, X, Award, Briefcase, GraduationCap, Wrench, ArrowUp } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Mail, Linkedin, Github, ExternalLink, ArrowRight, Award } from 'lucide-react';
 
 export default function App() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hoveredSkill, setHoveredSkill] = useState(null);
-  const [scrolled, setScrolled] = useState(false);
-  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [scrollY, setScrollY] = useState(0);
+  const [visibleSections, setVisibleSections] = useState({});
+  const sectionRefs = useRef({});
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-      setShowScrollTop(window.scrollY > 400);
+      setScrollY(window.scrollY);
+      
+      Object.keys(sectionRefs.current).forEach(key => {
+        const element = sectionRefs.current[key];
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          const isVisible = rect.top < window.innerHeight * 0.8 && rect.bottom > 0;
+          setVisibleSections(prev => ({ ...prev, [key]: isVisible }));
+        }
+      });
     };
+
     window.addEventListener('scroll', handleScroll);
+    handleScroll();
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToSection = (id) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMobileMenuOpen(false);
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const skills = {
-    "Programming Languages": ["Java", "JavaScript", "SQL", "HTML5", "CSS3"],
-    "Backend Technologies": ["Spring Boot", "Spring MVC", "Spring Data JPA", "Hibernate", "REST APIs", "Microservices", "JWT"],
-    "Frontend Technologies": ["React.js", "Tailwind CSS", "Bootstrap"],
-    "Database": ["MySQL"],
-    "DevOps & Tools": ["Git", "GitHub", "Maven", "Postman", "CI/CD", "Railway", "Vercel", "Docker"]
-  };
+  const skills = [
+    "Java", "Spring Boot", "Spring MVC", "Spring Data JPA", "Hibernate",
+    "React.js", "JavaScript", "HTML5", "CSS3", "Tailwind CSS",
+    "MySQL", "REST APIs", "Microservices", "JWT", "Git", "Docker", "CI/CD"
+  ];
 
   const projects = [
     {
       title: "E-Commerce Platform",
-      period: "Jul 2025 - Aug 2025",
-      description: "Full-stack e-commerce solution with advanced features and optimizations",
-      highlights: [
-        "Engineered 15+ RESTful APIs with 35% reduction in response time",
-        "Built responsive React.js frontend with 98% mobile compatibility",
-        "Designed normalized MySQL schema with 45% faster query execution"
-      ],
-      tech: ["Spring Boot", "React.js", "MySQL", "Tailwind CSS"]
+      description: "Full-stack e-commerce solution with advanced features and performance optimizations",
+      tech: "Spring Boot • React.js • MySQL • Tailwind CSS",
+      highlights: "15+ REST APIs • 35% faster response time • 98% mobile compatibility",
+      image: "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&h=600&fit=crop"
     },
     {
       title: "Anime Content Management Platform",
-      period: "2025",
-      description: "Dynamic content management system for anime reviews and streaming",
-      highlights: [
-        "Developed full-stack CMS with dynamic React components",
-        "Implemented Spring Boot REST APIs following MVC patterns",
-        "Deployed with CI/CD on Vercel and Railway with zero-downtime"
-      ],
-      tech: ["Spring Boot", "React.js", "Vercel", "Railway"]
+      description: "Dynamic CMS for anime reviews and streaming with modern architecture",
+      tech: "Spring Boot • React.js • Vercel • Railway",
+      highlights: "Zero-downtime deployment • Dynamic components • MVC pattern",
+      image: "https://images.unsplash.com/photo-1551650975-87deedd944c3?w=800&h=600&fit=crop"
     }
   ];
 
   const certifications = [
-    "Java Programming Certification - IIT Kanpur (Online)",
-    "Data Structures and Algorithms (Intermediate) - HackerRank",
-    "React.js Web Development - Let's Upgrade",
-    "160 Days of Data Structures & Algorithms Program - GeeksforGeeks"
+    { name: "Java Programming Certification", org: "IIT Kanpur (Online)", year: "2024" },
+    { name: "Data Structures and Algorithms", org: "HackerRank", year: "2024" },
+    { name: "React.js Web Development", org: "Let's Upgrade", year: "2024" },
+    { name: "160 Days of DSA Program", org: "GeeksforGeeks", year: "2024" }
+  ];
+
+  const timeline = [
+    { year: "2022", title: "Bachelor of Technology", org: "Dr. A.P.J. Abdul Kalam Technical University", desc: "Computer Science & Engineering" },
+    { year: "2024", title: "Java Programming Certification", org: "IIT Kanpur", desc: "Advanced Java concepts and implementation" },
+    { year: "2025", title: "Full-Stack Development", org: "Major Projects", desc: "Built 2 production-ready applications" },
+    { year: "2026", title: "Graduation (Expected)", org: "CGPA: 7.5/10.0", desc: "Focus: Enterprise Software Development" }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">
-      {/* Navigation */}
-      <nav className={`fixed top-0 w-full z-50 border-b transition-all duration-300 ${
-        scrolled ? 'bg-slate-900/95 backdrop-blur-lg border-purple-500/30 shadow-lg shadow-purple-500/10' : 'bg-slate-900/80 backdrop-blur-md border-purple-500/20'
-      }`}>
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent hover:scale-110 transition-transform duration-300 cursor-pointer">
-              AY
-            </span>
-            
-            {/* Desktop Menu */}
-            <div className="hidden md:flex space-x-8">
-              {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => scrollToSection(item.toLowerCase())}
-                  className="hover:text-purple-400 transition-all duration-300 hover:scale-110 relative group"
-                >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-400 transition-all duration-300 group-hover:w-full"></span>
-                </button>
-              ))}
-            </div>
+    <div className="bg-black text-white min-h-screen">
+      {/* Hero Section */}
+      <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
+        <div className="max-w-5xl mx-auto text-center">
+          <div 
+            className="opacity-0 animate-fadeInUp"
+            style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
+          >
+            <h1 className="text-8xl md:text-9xl font-black mb-6 tracking-tight">
+              ANOOP YADAV
+            </h1>
+          </div>
+          
+          <div 
+            className="opacity-0 animate-fadeInUp"
+            style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}
+          >
+            <p className="text-3xl md:text-4xl text-gray-400 mb-4 font-light">
+              Full-Stack Developer
+            </p>
+            <div className="w-24 h-1 bg-white mx-auto mb-8"></div>
+            <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
+              Building scalable enterprise solutions with Java, Spring Boot, and React.js
+            </p>
+          </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden hover:scale-110 transition-transform"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              {mobileMenuOpen ? <X /> : <Menu />}
-            </button>
+          <div 
+            className="opacity-0 animate-fadeInUp mt-12"
+            style={{ animationDelay: '0.8s', animationFillMode: 'forwards' }}
+          >
+            <div className="flex gap-8 justify-center text-gray-500">
+              <a href="#about" className="hover:text-white transition-all duration-300 group">
+                <span className="text-sm uppercase tracking-wider">About</span>
+                <div className="h-[2px] w-0 group-hover:w-full bg-white transition-all duration-300"></div>
+              </a>
+              <a href="#work" className="hover:text-white transition-all duration-300 group">
+                <span className="text-sm uppercase tracking-wider">Work</span>
+                <div className="h-[2px] w-0 group-hover:w-full bg-white transition-all duration-300"></div>
+              </a>
+              <a href="#contact" className="hover:text-white transition-all duration-300 group">
+                <span className="text-sm uppercase tracking-wider">Contact</span>
+                <div className="h-[2px] w-0 group-hover:w-full bg-white transition-all duration-300"></div>
+              </a>
+            </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-800 border-t border-purple-500/20 animate-slideDown">
-            {['About', 'Skills', 'Projects', 'Education', 'Contact'].map((item) => (
-              <button
-                key={item}
-                onClick={() => scrollToSection(item.toLowerCase())}
-                className="block w-full text-left px-4 py-3 hover:bg-slate-700 transition-colors"
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        )}
-      </nav>
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 opacity-0 animate-fadeIn" style={{ animationDelay: '1.5s', animationFillMode: 'forwards' }}>
+          <div className="w-[2px] h-16 bg-gradient-to-b from-white to-transparent animate-pulse"></div>
+        </div>
+      </section>
 
-      {/* Hero Section */}
-      <section id="about" className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            {/* Text Content */}
-            <div className="text-center md:text-left order-2 md:order-1 animate-fadeInLeft">
-              <h1 className="text-5xl sm:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient">
-                Anoop Yadav
-              </h1>
-              <p className="text-2xl sm:text-3xl text-purple-300 mb-4 animate-fadeIn" style={{animationDelay: '0.2s'}}>Full-Stack Developer</p>
-              <p className="text-lg text-gray-300 mb-8 animate-fadeIn" style={{animationDelay: '0.4s'}}>
-                Expertise in Java, Spring Boot, React.js, and RESTful APIs. Dedicated to designing and implementing scalable enterprise solutions with 200+ algorithmic problem-solving achievements.
-              </p>
-              
-              {/* Social Links */}
-              <div className="flex justify-center md:justify-start space-x-6 mb-8 animate-fadeIn" style={{animationDelay: '0.6s'}}>
-                <a href="mailto:anoopyadav5984@gmail.com" className="hover:text-purple-400 transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                  <Mail size={24} />
-                </a>
-                <a href="https://linkedin.com/in/anoop-yadav-232808329" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                  <Linkedin size={24} />
-                </a>
-                <a href="https://leetcode.com/anoopyadav" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                  <Code size={24} />
-                </a>
-                <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-all duration-300 hover:scale-125 hover:-translate-y-1">
-                  <Github size={24} />
-                </a>
-              </div>
-            </div>
-
-            {/* Profile Image Section */}
-            <div className="order-1 md:order-2 flex justify-center animate-fadeInRight">
+      {/* About Section */}
+      <section 
+        id="about"
+        ref={el => sectionRefs.current['about'] = el}
+        className="min-h-screen flex items-center px-6 py-32"
+      >
+        <div className="max-w-6xl mx-auto w-full">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div 
+              className={`transition-all duration-1000 ${
+                visibleSections['about'] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+              }`}
+            >
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-1000 animate-pulse"></div>
-                <div className="relative w-64 h-64 sm:w-80 sm:h-80 rounded-full overflow-hidden border-4 border-purple-500/50 group-hover:border-purple-400 transition-all duration-300 group-hover:scale-105">
-                  <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                    <svg className="w-32 h-32 sm:w-40 sm:h-40 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="absolute -inset-4 bg-white/20 blur-3xl group-hover:bg-white/30 transition-all duration-500"></div>
+                <div className="relative w-full aspect-square max-w-md mx-auto rounded-2xl overflow-hidden border-2 border-white/20 group-hover:border-white/40 transition-all duration-500">
+                  <div className="w-full h-full bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center">
+                    <svg className="w-1/2 h-1/2 text-white/40" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                     </svg>
                   </div>
                 </div>
-                {/* Floating Icons */}
-                <div className="absolute -top-4 -right-4 bg-purple-600 p-3 rounded-full animate-bounce shadow-lg shadow-purple-600/50">
-                  <Code size={24} />
-                </div>
-                <div className="absolute -bottom-4 -left-4 bg-pink-600 p-3 rounded-full animate-bounce shadow-lg shadow-pink-600/50" style={{animationDelay: '0.5s'}}>
-                  <Briefcase size={24} />
+              </div>
+            </div>
+
+            <div 
+              className={`space-y-8 transition-all duration-1000 delay-300 ${
+                visibleSections['about'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+              }`}
+            >
+              <div>
+                <div className="text-sm uppercase tracking-widest text-gray-500 mb-4">About Me</div>
+                <h2 className="text-5xl md:text-6xl font-bold mb-8">
+                  Simple.<br/>
+                  Confident.<br/>
+                  <span className="text-gray-600">Technical.</span>
+                </h2>
+              </div>
+              
+              <div className="space-y-6 text-xl text-gray-400 leading-relaxed">
+                <p>
+                  I'm a Full-Stack Developer passionate about creating elegant solutions to complex problems. Specializing in Java ecosystem and modern web technologies.
+                </p>
+                <p>
+                  With expertise in Spring Boot, React.js, and cloud deployment, I build scalable applications that make a difference. <span className="text-white font-semibold">200+ algorithmic problems solved</span> and counting.
+                </p>
+              </div>
+
+              <div className="pt-8">
+                <div className="text-gray-500 mb-4">Core Focus</div>
+                <div className="space-y-2 text-lg">
+                  <div className="flex items-center gap-3 group cursor-default">
+                    <div className="w-2 h-2 bg-white group-hover:w-8 transition-all duration-300"></div>
+                    <span className="group-hover:text-white transition-colors">Enterprise Application Development</span>
+                  </div>
+                  <div className="flex items-center gap-3 group cursor-default">
+                    <div className="w-2 h-2 bg-white group-hover:w-8 transition-all duration-300"></div>
+                    <span className="group-hover:text-white transition-colors">RESTful API Design</span>
+                  </div>
+                  <div className="flex items-center gap-3 group cursor-default">
+                    <div className="w-2 h-2 bg-white group-hover:w-8 transition-all duration-300"></div>
+                    <span className="group-hover:text-white transition-colors">Full-Stack Architecture</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Stats - Full Width Below */}
-          <div className="mt-12 animate-fadeInUp">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {[
-                { value: "200+", label: "Problems Solved" },
-                { value: "15+", label: "REST APIs Built" },
-                { value: "2", label: "Major Projects" },
-                { value: "7.5", label: "CGPA" }
-              ].map((stat, idx) => (
-                <div key={idx} className="bg-slate-800/50 backdrop-blur-sm p-4 rounded-lg border border-purple-500/20 hover:border-purple-400 transition-all duration-300 hover:transform hover:scale-110 hover:shadow-lg hover:shadow-purple-500/30 animate-fadeIn" style={{animationDelay: `${0.8 + idx * 0.1}s`}}>
-                  <div className="text-3xl font-bold text-purple-400">{stat.value}</div>
-                  <div className="text-sm text-gray-400">{stat.label}</div>
+          <div 
+            className={`mt-16 transition-all duration-1000 delay-500 ${
+              visibleSections['about'] ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20'
+            }`}
+          >
+            <div className="relative">
+              <div className="absolute inset-0 bg-white/5 blur-3xl"></div>
+              <div className="relative bg-gradient-to-br from-white/10 to-transparent border border-white/10 rounded-2xl p-12 backdrop-blur-sm">
+                <div className="grid md:grid-cols-4 gap-8">
+                  <div>
+                    <div className="text-gray-500 mb-2">Email</div>
+                    <div className="text-lg">anoopyadav5984@gmail.com</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500 mb-2">Phone</div>
+                    <div className="text-lg">+91-9005437293</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500 mb-2">Location</div>
+                    <div className="text-lg">Lucknow, India</div>
+                  </div>
+                  <div>
+                    <div className="text-gray-500 mb-2">Status</div>
+                    <div className="text-lg flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                      Available
+                    </div>
+                  </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
+      <section 
+        ref={el => sectionRefs.current['skills'] = el}
+        className="py-32 px-6"
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center flex items-center justify-center gap-3 animate-fadeIn">
-            <Wrench className="text-purple-400 animate-spin-slow" />
-            Skills & Technologies
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            {Object.entries(skills).map(([category, items], idx) => (
-              <div key={category} className="bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all transform hover:scale-105 duration-300 hover:shadow-xl hover:shadow-purple-500/20 animate-fadeInUp" style={{animationDelay: `${idx * 0.1}s`}}>
-                <h3 className="text-xl font-semibold text-purple-300 mb-4">{category}</h3>
-                <div className="flex flex-wrap gap-2">
-                  {items.map((skill) => (
-                    <span
-                      key={skill}
-                      onMouseEnter={() => setHoveredSkill(skill)}
-                      onMouseLeave={() => setHoveredSkill(null)}
-                      className={`px-3 py-1 bg-purple-500/20 rounded-full text-sm border border-purple-500/30 hover:bg-purple-500/40 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-purple-500/50 ${
-                        hoveredSkill === skill ? 'transform scale-110 bg-purple-500/40' : ''
-                      }`}
-                    >
-                      {skill}
-                    </span>
-                  ))}
+          <div 
+            className={`mb-20 transition-all duration-1000 ${
+              visibleSections['skills'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <div className="text-sm uppercase tracking-widest text-gray-500 mb-4">Technical Skills</div>
+            <h2 className="text-5xl md:text-6xl font-bold">What I Work With</h2>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {skills.map((skill, idx) => (
+              <div
+                key={idx}
+                className={`group transition-all duration-700 ${
+                  visibleSections['skills'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+                }`}
+                style={{ transitionDelay: `${idx * 50}ms` }}
+              >
+                <div className="bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 cursor-default h-full">
+                  <div className="text-lg font-medium group-hover:text-white transition-colors">
+                    {skill}
+                  </div>
+                  <div className="w-0 h-[2px] bg-white group-hover:w-full transition-all duration-500 mt-4"></div>
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Soft Skills */}
-          <div className="mt-6 bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 animate-fadeInUp" style={{animationDelay: '0.6s'}}>
-            <h3 className="text-xl font-semibold text-purple-300 mb-4">Soft Skills</h3>
-            <div className="flex flex-wrap gap-2">
-              {["Problem-solving", "Analytical thinking", "Team collaboration", "Agile methodologies"].map((skill) => (
-                <span
-                  key={skill}
-                  className="px-3 py-1 bg-pink-500/20 rounded-full text-sm border border-pink-500/30 hover:bg-pink-500/40 hover:scale-110 transition-all duration-300 cursor-pointer hover:shadow-lg hover:shadow-pink-500/50"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-20 px-4 sm:px-6 lg:px-8">
+      <section 
+        id="work"
+        ref={el => sectionRefs.current['projects'] = el}
+        className="py-32 px-6"
+      >
         <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center flex items-center justify-center gap-3 animate-fadeIn">
-            <Briefcase className="text-purple-400" />
-            Featured Projects
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
-              <div
-                key={index}
-                className="bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 animate-fadeInUp group"
-                style={{animationDelay: `${index * 0.2}s`}}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-2xl font-bold text-purple-300 group-hover:text-purple-200 transition-colors">{project.title}</h3>
-                  <ExternalLink className="text-gray-400 hover:text-purple-400 transition-all duration-300 hover:scale-125" size={20} />
-                </div>
-                <p className="text-sm text-gray-400 mb-3">{project.period}</p>
-                <p className="text-gray-300 mb-4">{project.description}</p>
-                
-                <ul className="space-y-2 mb-4">
-                  {project.highlights.map((highlight, i) => (
-                    <li key={i} className="text-sm text-gray-400 flex items-start group-hover:text-gray-300 transition-colors">
-                      <span className="text-purple-400 mr-2">→</span>
-                      {highlight}
-                    </li>
-                  ))}
-                </ul>
+          <div 
+            className={`mb-20 transition-all duration-1000 ${
+              visibleSections['projects'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <div className="text-sm uppercase tracking-widest text-gray-500 mb-4">Featured Work</div>
+            <h2 className="text-5xl md:text-6xl font-bold">Selected Projects</h2>
+          </div>
 
-                <div className="flex flex-wrap gap-2">
-                  {project.tech.map((tech) => (
-                    <span
-                      key={tech}
-                      className="px-2 py-1 bg-purple-500/10 rounded text-xs border border-purple-500/20 hover:bg-purple-500/30 hover:scale-110 transition-all duration-300"
-                    >
-                      {tech}
-                    </span>
-                  ))}
+          <div className="space-y-8">
+            {projects.map((project, idx) => (
+              <div
+                key={idx}
+                className={`group transition-all duration-1000 ${
+                  visibleSections['projects'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+                }`}
+                style={{ transitionDelay: `${idx * 200}ms` }}
+              >
+                <div className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:bg-white/10 hover:border-white/20 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 cursor-pointer">
+                  <div className="grid md:grid-cols-5 gap-6">
+                    <div className="md:col-span-2 relative overflow-hidden h-64 md:h-auto">
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent group-hover:scale-110 transition-transform duration-700">
+                        <img 
+                          src={project.image} 
+                          alt={project.title}
+                          className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-500"
+                        />
+                      </div>
+                    </div>
+                    
+                    <div className="md:col-span-3 p-10">
+                      <div className="flex items-start justify-between mb-6">
+                        <h3 className="text-3xl font-bold group-hover:text-white transition-colors">
+                          {project.title}
+                        </h3>
+                        <ExternalLink className="text-gray-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" size={24} />
+                      </div>
+                      
+                      <p className="text-xl text-gray-400 mb-6 leading-relaxed">
+                        {project.description}
+                      </p>
+                      
+                      <div className="text-gray-500 mb-4 text-sm uppercase tracking-wider">
+                        {project.tech}
+                      </div>
+                      
+                      <div className="text-white/80 flex items-center gap-2">
+                        <ArrowRight size={16} />
+                        <span>{project.highlights}</span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
+
+          <div 
+            className={`mt-16 text-center transition-all duration-1000 delay-500 ${
+              visibleSections['projects'] ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <a 
+              href="https://github.com/anoopyadav" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors group"
+            >
+              <span className="text-lg">View all projects on GitHub</span>
+              <ArrowRight className="group-hover:translate-x-2 transition-transform" size={20} />
+            </a>
+          </div>
         </div>
       </section>
 
-      {/* Education & Certifications */}
-      <section id="education" className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-800/30">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold mb-12 text-center flex items-center justify-center gap-3 animate-fadeIn">
-            <GraduationCap className="text-purple-400" />
-            Education & Certifications
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Education */}
-            <div className="bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 animate-fadeInLeft">
-              <h3 className="text-2xl font-bold text-purple-300 mb-4">Education</h3>
-              <div className="space-y-2">
-                <p className="text-lg font-semibold">Bachelor of Technology</p>
-                <p className="text-gray-400">Computer Science and Engineering</p>
-                <p className="text-gray-400">Dr. A. P. J. Abdul Kalam Technical University</p>
-                <p className="text-gray-400">Aug 2022 - May 2026</p>
-                <p className="text-purple-300 font-semibold mt-2">CGPA: 7.5/10.0</p>
-              </div>
-            </div>
+      {/* Timeline Section */}
+      <section 
+        ref={el => sectionRefs.current['timeline'] = el}
+        className="py-32 px-6"
+      >
+        <div className="max-w-4xl mx-auto">
+          <div 
+            className={`mb-20 transition-all duration-1000 ${
+              visibleSections['timeline'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <div className="text-sm uppercase tracking-widest text-gray-500 mb-4">Journey</div>
+            <h2 className="text-5xl md:text-6xl font-bold">Education & Experience</h2>
+          </div>
 
-            {/* Certifications */}
-            <div className="bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 animate-fadeInRight">
-              <h3 className="text-2xl font-bold text-purple-300 mb-4 flex items-center gap-2">
-                <Award size={24} />
-                Certifications
-              </h3>
-              <ul className="space-y-3">
-                {certifications.map((cert, index) => (
-                  <li key={index} className="text-sm text-gray-300 flex items-start hover:text-purple-300 transition-colors">
-                    <span className="text-purple-400 mr-2">✓</span>
-                    {cert}
-                  </li>
-                ))}
-              </ul>
+          <div className="relative">
+            <div className="absolute left-0 top-0 bottom-0 w-[2px] bg-white/10"></div>
+            
+            <div className="space-y-16">
+              {timeline.map((item, idx) => (
+                <div
+                  key={idx}
+                  className={`relative pl-12 transition-all duration-1000 ${
+                    visibleSections['timeline'] ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+                  }`}
+                  style={{ transitionDelay: `${idx * 150}ms` }}
+                >
+                  <div className="absolute left-0 top-2 w-4 h-4 bg-white rounded-full shadow-lg shadow-white/50"></div>
+                  <div className="absolute left-4 top-2 w-8 h-[2px] bg-white/20"></div>
+                  
+                  <div className="group cursor-default">
+                    <div className="text-sm text-gray-500 mb-2 uppercase tracking-wider">{item.year}</div>
+                    <h3 className="text-2xl font-bold mb-2 group-hover:text-white transition-colors">{item.title}</h3>
+                    <div className="text-lg text-gray-400 mb-2">{item.org}</div>
+                    <p className="text-gray-500">{item.desc}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          {/* Technical Achievements */}
-          <div className="mt-8 bg-slate-900/50 backdrop-blur-sm p-6 rounded-lg border border-purple-500/20 hover:border-purple-500/40 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 animate-fadeInUp" style={{animationDelay: '0.4s'}}>
-            <h3 className="text-2xl font-bold text-purple-300 mb-4">Technical Achievements</h3>
-            <ul className="grid md:grid-cols-2 gap-4">
-              {[
-                "Solved 200+ algorithmic problems across LeetCode, GeeksforGeeks, and HackerRank",
-                "Mastered advanced DSA including DP, graphs, backtracking, and greedy algorithms",
-                "Completed GeeksforGeeks 160 Days DSA intensive program",
-                "Active in competitive programming and open-source contributions"
-              ].map((achievement, idx) => (
-                <li key={idx} className="text-gray-300 flex items-start hover:text-purple-300 transition-colors">
-                  <span className="text-purple-400 mr-2">★</span>
-                  {achievement}
-                </li>
+          <div 
+            className={`mt-20 bg-white/5 border border-white/10 rounded-2xl p-10 transition-all duration-1000 delay-700 ${
+              visibleSections['timeline'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <h3 className="text-2xl font-bold mb-8">Certifications</h3>
+            <div className="grid md:grid-cols-2 gap-4">
+              {certifications.map((cert, idx) => (
+                <div 
+                  key={idx}
+                  className="group relative bg-white/5 border border-white/10 rounded-xl p-6 hover:bg-white/10 hover:border-white/20 transition-all duration-300 cursor-pointer overflow-hidden"
+                >
+                  <div className="absolute inset-0 bg-white/95 text-black transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 flex items-center justify-center p-6 rounded-xl">
+                    <div className="text-center">
+                      <Award className="mx-auto mb-3" size={32} />
+                      <div className="font-bold text-lg mb-2">{cert.name}</div>
+                      <div className="text-sm opacity-70">{cert.org}</div>
+                      <div className="text-xs opacity-50 mt-2">{cert.year}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-3">
+                    <Award size={20} className="text-white/60 mt-1 flex-shrink-0" />
+                    <div>
+                      <div className="font-semibold mb-1 group-hover:opacity-0 transition-opacity">{cert.name}</div>
+                      <div className="text-sm text-gray-500 group-hover:opacity-0 transition-opacity">{cert.org}</div>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </ul>
+            </div>
+          </div>
+
+          <div 
+            className={`mt-12 bg-white/5 border border-white/10 rounded-2xl p-10 transition-all duration-1000 delay-900 ${
+              visibleSections['timeline'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <h3 className="text-2xl font-bold mb-6">Key Achievements</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-white mt-2"></div>
+                <div>
+                  <div className="font-semibold mb-1">200+ Problems Solved</div>
+                  <div className="text-sm text-gray-500">LeetCode, GeeksforGeeks, HackerRank</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-white mt-2"></div>
+                <div>
+                  <div className="font-semibold mb-1">Advanced DSA Mastery</div>
+                  <div className="text-sm text-gray-500">DP, Graphs, Backtracking, Greedy</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-white mt-2"></div>
+                <div>
+                  <div className="font-semibold mb-1">160 Days DSA Program</div>
+                  <div className="text-sm text-gray-500">GeeksforGeeks Intensive</div>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 bg-white mt-2"></div>
+                <div>
+                  <div className="font-semibold mb-1">Competitive Programming</div>
+                  <div className="text-sm text-gray-500">Active participant & contributor</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center animate-fadeIn">
-          <h2 className="text-4xl font-bold mb-8">Let's Connect</h2>
-          <p className="text-xl text-gray-300 mb-8">
-            I'm always open to discussing new opportunities, interesting projects, or just having a chat about technology!
-          </p>
-          
-          <div className="flex flex-col sm:flex-row justify-center gap-4 animate-fadeInUp" style={{animationDelay: '0.2s'}}>
-            <a
-              href="mailto:anoopyadav5984@gmail.com"
-              className="px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 hover:scale-110 hover:shadow-lg hover:shadow-purple-600/50"
-            >
-              <Mail size={20} />
-              Email Me
-            </a>
-            <a
-              href="https://linkedin.com/in/anoop-yadav-232808329"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 hover:scale-110 hover:shadow-lg hover:shadow-slate-600/50"
-            >
-              <Linkedin size={20} />
-              LinkedIn
-            </a>
-          </div>
+      <section 
+        id="contact"
+        ref={el => sectionRefs.current['contact'] = el}
+        className="min-h-screen flex items-center px-6 py-32"
+      >
+        <div className="max-w-4xl mx-auto w-full text-center">
+          <div 
+            className={`transition-all duration-1000 ${
+              visibleSections['contact'] ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
+          >
+            <div className="text-sm uppercase tracking-widest text-gray-500 mb-8">Get In Touch</div>
+            <h2 className="text-6xl md:text-7xl font-bold mb-8 leading-tight">
+              Let's build something<br/>meaningful together.
+            </h2>
+            <p className="text-2xl text-gray-400 mb-16 max-w-2xl mx-auto">
+              Open to full-time opportunities and interesting projects.
+            </p>
 
-          <div className="mt-8 text-gray-400 animate-fadeIn" style={{animationDelay: '0.4s'}}>
-            <p>+91-9005437293</p>
+            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+              <a
+                href="mailto:anoopyadav5984@gmail.com"
+                className="group inline-flex items-center justify-center gap-3 bg-white text-black px-10 py-5 rounded-full text-lg font-semibold hover:bg-gray-200 transition-all duration-300"
+              >
+                <Mail size={24} />
+                <span>Send Email</span>
+              </a>
+              <a
+                href="https://linkedin.com/in/anoop-yadav-232808329"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-3 border-2 border-white text-white px-10 py-5 rounded-full text-lg font-semibold hover:bg-white hover:text-black transition-all duration-300"
+              >
+                <Linkedin size={24} />
+                <span>LinkedIn</span>
+              </a>
+            </div>
+
+            <div className="flex gap-8 justify-center text-gray-500">
+              <a 
+                href="https://github.com/AnoopRepo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                <Github size={32} />
+              </a>
+              <a 
+                href="https://leetcode.com/anoop___yadav__" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-white transition-colors"
+              >
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104a5.35 5.35 0 0 0-.125.513a5.527 5.527 0 0 0 .062 2.362a5.83 5.83 0 0 0 .349 1.017a5.938 5.938 0 0 0 1.271 1.818l4.277 4.193l.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019l-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523a2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382a1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382a1.38 1.38 0 0 0-1.38-1.382z"/>
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8 px-4 border-t border-purple-500/20 text-center text-gray-400">
-        <p>© 2026 Anoop Yadav. Built with React & Tailwind CSS.</p>
+      <footer className="border-t border-white/10 py-12 px-6">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 text-gray-500">
+          <div>© 2026 Anoop Yadav. All rights reserved.</div>
+          <div className="text-sm">Designed & Built with React</div>
+        </div>
       </footer>
 
-      {/* Scroll to Top Button */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-8 right-8 bg-purple-600 hover:bg-purple-700 p-3 rounded-full shadow-lg shadow-purple-600/50 transition-all duration-300 hover:scale-110 animate-fadeIn z-50"
-        >
-          <ArrowUp size={24} />
-        </button>
-      )}
-
-      <style>{`
+      <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
         @keyframes fadeIn {
           from { opacity: 0; }
           to { opacity: 1; }
         }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInLeft {
-          from { opacity: 0; transform: translateX(-30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeInRight {
-          from { opacity: 0; transform: translateX(30px); }
-          to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideDown {
-          from { opacity: 0; transform: translateY(-10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.8s ease-out forwards;
-          opacity: 0;
-        }
+
         .animate-fadeInUp {
-          animation: fadeInUp 0.8s ease-out forwards;
-          opacity: 0;
+          animation: fadeInUp 1s ease-out;
         }
-        .animate-fadeInLeft {
-          animation: fadeInLeft 0.8s ease-out forwards;
-          opacity: 0;
+
+        .animate-fadeIn {
+          animation: fadeIn 1s ease-out;
         }
-        .animate-fadeInRight {
-          animation: fadeInRight 0.8s ease-out forwards;
-          opacity: 0;
+
+        html {
+          scroll-behavior: smooth;
         }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out forwards;
+
+        ::-webkit-scrollbar {
+          width: 8px;
         }
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
+
+        ::-webkit-scrollbar-track {
+          background: #000;
         }
-        .animate-spin-slow {
-          animation: spin 8s linear infinite;
+
+        ::-webkit-scrollbar-thumb {
+          background: #fff;
+          border-radius: 4px;
         }
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
+
+        ::-webkit-scrollbar-thumb:hover {
+          background: #ddd;
         }
       `}</style>
     </div>
