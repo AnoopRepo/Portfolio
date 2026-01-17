@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Linkedin, Github, ExternalLink, ArrowRight, Award } from 'lucide-react';
+import ig from "./images/linkdin.jpg";
 
 export default function App() {
   const [scrollY, setScrollY] = useState(0);
@@ -132,9 +133,7 @@ export default function App() {
                 <div className="absolute -inset-4 bg-white/20 blur-3xl group-hover:bg-white/30 transition-all duration-500"></div>
                 <div className="relative w-full aspect-square max-w-md mx-auto rounded-2xl overflow-hidden border-2 border-white/20 group-hover:border-white/40 transition-all duration-500">
                   <div className="w-full h-full bg-gradient-to-br from-gray-800 via-gray-700 to-gray-900 flex items-center justify-center">
-                    <svg className="w-1/2 h-1/2 text-white/40" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                    </svg>
+                    <img src={ig} alt="" />
                   </div>
                 </div>
               </div>
@@ -202,7 +201,7 @@ export default function App() {
                   </div>
                   <div>
                     <div className="text-gray-500 mb-2">Location</div>
-                    <div className="text-lg">Lucknow, India</div>
+                    <div className="text-lg">Kanpur, India</div>
                   </div>
                   <div>
                     <div className="text-gray-500 mb-2">Status</div>
