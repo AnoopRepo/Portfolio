@@ -323,7 +323,7 @@ export default function App() {
             }`}
           >
             <a 
-              href="https://github.com/anoopyadav" 
+              href="https://github.com/AnoopRepo" 
               target="_blank" 
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors group"
